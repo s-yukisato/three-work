@@ -207,22 +207,22 @@ function init() {
     // normal
     let nor = textureLoader.load('textures/wall/rough_block_wall_nor.jpg');
     mat.normalMap = nor;
-    mat.normalScale = new THREE.Vector2(3, -3)
+    mat.normalScale = new THREE.Vector2(5, -5)
 
     function createCube(position) {
-        var cubeGeometry = new THREE.BoxGeometry(6000, 3000, 8000, 16, 16);
-        var cube = new THREE.Mesh(cubeGeometry, mat);
+        const cubeGeometry = new THREE.BoxGeometry(8000, 8000, 8000, 16, 16);
+        const cube = new THREE.Mesh(cubeGeometry, mat);
         cube.castShadow = true;
         cube.position.set(position.x, position.y, position.z)
 
         return cube
     }
-    let cube = createCube({x: 0, y: 0, z: 0})
+    let cube = createCube({x: 0, y: -2000, z: 0})
     scene.add(cube)
 
     loader.load('models/fbx/Wooden_House/Wooden_House.fbx', function (object) {
         house = object;
-        house.position.y = 1500
+        house.position.y = 2000
         house.scale.set(2, 2, 2)
         const texture = textureLoader.load('models/fbx/Wooden_House/House_Texture.png');
         house.traverse(function (child) {

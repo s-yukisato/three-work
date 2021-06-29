@@ -3,7 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const outputPath = path.resolve(__dirname, 'docs');
 
 module.exports = {
-    mode: "development",
+    mode: "production",
     entry: './src/index.js',
     output: {
         path: outputPath,
@@ -11,9 +11,9 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: './src/sample.html',
+            template: './src/index.html',
             filename: 'index.html',
         })
     ],
-    devtool: 'inline-source-map',
+    // devtool: 'inline-source-map',
 }
