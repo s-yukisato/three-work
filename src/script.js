@@ -75,39 +75,38 @@ function init() {
     const objLoader = new OBJLoader()
     const fbxLoader = new FBXLoader();
     const mtlLoader = new MTLLoader();
-    // mtlLoader.load("models/obj/Plane/plane.mtl", (mtl) => {
-    //     mtl.preload()
-    //     objLoader.setMaterials(mtl)
-    //     objLoader.load("models/obj/Plane/plane.obj", (obj) => {
-    //         plane = obj
-    //         plane.position.set(0, 10, 0)
-    //         plane.rotation.x = Math.PI * -0.5
-    //         scene.add(plane)
-    //     })
-    // })
-    fbxLoader.load("models/fbx/Aircraft/Aircraft.fbx", obj => {
-        fbx = obj;
-        fbx.rotation.y = Math.PI * -0.5
-        fbx.visible = true
-        fbx.position.y = -100
-        mixer = new THREE.AnimationMixer(fbx);
-        
-        const action = mixer.clipAction(fbx.animations[0]);
-        action.play();
-
-        fbx.traverse(function (child) {
-
-            if (child.isMesh) {
-                child.floor = false
-                child.castShadow = true;
-                child.receiveShadow = true;
-
-            }
-
-        });
-
-        scene.add(fbx);
+    mtlLoader.load("models/obj/Airplane/11803_Airplane_v1_l1.mtl", (mtl) => {
+        mtl.preload()
+        objLoader.setMaterials(mtl)
+        objLoader.load("models/obj/Airplane/11803_Airplane_v1_l1.obj", (obj) => {
+            plane = obj
+            plane.position.set(0, 10, 0)
+            // plane.rotation.x = Math.PI * -0.5
+            scene.add(plane)
+        })
     })
+    // fbxLoader.load("models/fbx/Aircraft/Aircraft.fbx", obj => {
+    //     fbx = obj;
+    //     fbx.rotation.y = Math.PI * -0.5
+    //     fbx.visible = true
+    //     fbx.position.y = -100
+    //     mixer = new THREE.AnimationMixer(fbx);
+        
+    //     const action = mixer.clipAction(fbx.animations[0]);
+    //     action.play();
+
+    //     fbx.traverse(function (child) {
+
+    //         if (child.isMesh) {
+    //             child.castShadow = true;
+    //             child.receiveShadow = true;
+
+    //         }
+
+    //     });
+
+    //     scene.add(fbx);
+    // })
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(window.devicePixelRatio);
@@ -142,19 +141,15 @@ function animate() {
 
     const delta = clock.getDelta();
     
-    if (mixer) mixer.update(delta);
+    // if (mixer) mixer.update(delta);
 
     frame++;
     // もしフレーム数が360以上であれば0に戻す
     if (frame > 359) frame = 0;
     // ドラゴンの位置を修正
     if (plane) {
-        let normal = getNormal(points[frame + 30], points[frame + 31])
-        plane.position.copy(points[frame + 30]);
-        plane.up.set(normal.x, normal.y, normal.z)
-        plane.lookAt(points[frame + 31])
-        plane.rotation.x = Math.PI * 0.5
-        // plane.rotation.y = Math.PI * 0.5
+        plane.position.z += 0.03
+        // plane.position.z += Math.PI * 0.5
     }
     // if (smoke) {
     //     let normal = getNormal(points[frame + 20], points[frame + 21])
@@ -166,4 +161,25 @@ function animate() {
     renderer.render(scene, camera);
 
     stats.update();
+}
+
+function onPointerMove(event) {
+
+    pointer.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+    pointer.y = - (event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+    raycaster.setFromCamera(pointer, camera);
+
+    // See if the ray from the camera into the world hits one of our meshes
+    const intersects = raycaster.intersectObject(mesh);
+
+    // Toggle rotation bool for meshes that we clicked
+    if (intersects.length > 0) {
+
+        helper.position.set(0, 0, 0);
+        helper.lookAt(intersects[0].face.normal);
+
+        helper.position.copy(intersects[0].point);
+
+    }
+
 }

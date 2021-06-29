@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 import { Water } from 'three/examples/jsm/objects/Water'
+import { Sky } from 'three/examples/jsm/objects/Sky'
 
 import { ImprovedNoise } from 'three/examples/jsm/math/ImprovedNoise.js';
 
@@ -39,13 +40,14 @@ function init() {
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0xbfd1e5);
 
-    scene.fog = new THREE.Fog(0xffffff, 2000, 15000);
+    scene.fog = new THREE.Fog(0xffffff, 2000, 20000);
 
     camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 10, 20000);
 
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444);
     hemiLight.position.set(10000, 1000, -10000);
     scene.add(hemiLight);
+
 
     controls = new OrbitControls(camera, renderer.domElement);
     controls.minDistance = 1000;
@@ -57,12 +59,12 @@ function init() {
     const data = generateHeight(worldWidth, worldDepth);
 
     controls.target.y = data[worldHalfWidth + worldHalfDepth * worldWidth] + 500;
-    camera.position.y = controls.target.y + 500;
+    camera.position.y = controls.target.y + 400;
     camera.position.x = -6000;
     camera.position.z = 6000;
     controls.update();
 
-    const geometry = new THREE.PlaneGeometry(15000, 15000, worldWidth - 1, worldDepth - 1);
+    const geometry = new THREE.PlaneGeometry(30000, 30000, worldWidth - 1, worldDepth - 1);
     geometry.rotateX(- Math.PI / 2);
 
     const vertices = geometry.attributes.position.array;
@@ -113,7 +115,7 @@ function init() {
     // container.addEventListener('pointermove', onPointerMove);
 
     // 水面
-    const waterGeometry = new THREE.PlaneGeometry(15000, 15000);
+    const waterGeometry = new THREE.PlaneGeometry(30000, 30000);
     const flowMap = textureLoader.load('textures/water/Water_1_M_Flow.jpg');
 
     water = new Water(waterGeometry, {
@@ -133,6 +135,52 @@ function init() {
     water.position.y = 300;
     water.rotation.x = Math.PI * - 0.5;
     scene.add(water);
+
+    //Sky
+    const sky = new Sky();
+    sky.scale.setScalar(450000);
+    scene.add(sky);
+
+    //Skyの設定
+    const sky_uniforms = sky.material.uniforms;
+    sky_uniforms['turbidity'].value = 1;
+    sky_uniforms['rayleigh'].value = 0.5;
+    // sky_uniforms['luminance'].value = 1;
+    sky_uniforms['mieCoefficient'].value = 0.005;
+    sky_uniforms['mieDirectionalG'].value = 0.3;
+
+    // Sun
+    const sunSphere = new THREE.Mesh(
+        new THREE.SphereGeometry(50, 16, 8),
+        new THREE.MeshBasicMaterial({ color: 0xFF0000 })
+    );
+    scene.add(sunSphere);
+
+    // Sunの設定
+    const sun_uniforms = sky.material.uniforms;
+    sun_uniforms['turbidity'].value = 1;
+    sun_uniforms['rayleigh'].value = 0.5;
+    sun_uniforms['mieCoefficient'].value = 0.005;
+    sun_uniforms['mieDirectionalG'].value = 0.7;
+    // sun_uniforms['luminance'].value = 1;
+
+    const theta = Math.PI * (-0.01);
+    const phi = 2 * Math.PI * (-0.25);
+    const distance = 40000;
+    sunSphere.position.x = distance * Math.cos(phi);
+    sunSphere.position.y = distance * Math.sin(phi) * Math.sin(theta);
+    sunSphere.position.z = distance * Math.sin(phi) * Math.cos(theta);
+    sunSphere.visible = true;
+    sun_uniforms['sunPosition'].value.copy(sunSphere.position);
+
+    // const dirLight = new THREE.DirectionalLight(0xffffff);
+    // dirLight.position.set(sunSphere.position);
+    // dirLight.castShadow = true;
+    // dirLight.shadow.camera.top = 1000;
+    // dirLight.shadow.camera.bottom = -10000;
+    // dirLight.shadow.camera.left = -10000;
+    // dirLight.shadow.camera.right = 10000;
+    // scene.add(dirLight);
 
 
     // model

@@ -18,7 +18,7 @@ export function getNormal(currentPoint, nextPoint) {
         .clone()
         .sub(currentPoint)
         .normalize();
-    var vAZ = new THREE.Vector3(0, 0, 1);
+    var vAZ = new THREE.Vector3(0, 1, 0);
     // 法線ベクトルが常にプラスを向くよう調整
     // var normalVec = vAB.cross(vAY)
     var normalVec = nextPoint.z >= 0 ? vAB.cross(vAZ) : vAZ.cross(vAB);
