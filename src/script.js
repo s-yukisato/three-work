@@ -13,6 +13,7 @@ let camera, scene, renderer, stats;
 
 const clock = new THREE.Clock();
 let fbx, mixer;
+let alien
 
 // 座標リスト
 let plane;
@@ -75,16 +76,16 @@ function init() {
     const objLoader = new OBJLoader()
     const fbxLoader = new FBXLoader();
     const mtlLoader = new MTLLoader();
-    mtlLoader.load("models/obj/Airplane/11803_Airplane_v1_l1.mtl", (mtl) => {
-        mtl.preload()
-        objLoader.setMaterials(mtl)
-        objLoader.load("models/obj/Airplane/11803_Airplane_v1_l1.obj", (obj) => {
-            plane = obj
-            plane.position.set(0, 10, 0)
-            // plane.rotation.x = Math.PI * -0.5
-            scene.add(plane)
-        })
-    })
+    // mtlLoader.load("models/obj/Airplane/11803_Airplane_v1_l1.mtl", (mtl) => {
+    //     mtl.preload()
+    //     objLoader.setMaterials(mtl)
+    //     objLoader.load("models/obj/Airplane/11803_Airplane_v1_l1.obj", (obj) => {
+    //         plane = obj
+    //         plane.position.set(0, 10, 0)
+    //         // plane.rotation.x = Math.PI * -0.5
+    //         scene.add(plane)
+    //     })
+    // })
     // fbxLoader.load("models/fbx/Aircraft/Aircraft.fbx", obj => {
     //     fbx = obj;
     //     fbx.rotation.y = Math.PI * -0.5
@@ -107,6 +108,24 @@ function init() {
 
     //     scene.add(fbx);
     // })
+
+    fbxLoader.load('models/fbx/Car/FuturisticCar.fbx', function (object) {
+        alien = object;
+        alien.position.y = 0
+        alien.position.z = 0
+        alien.scale.set(2, 2, 2)
+        mixer = new THREE.AnimationMixer(alien);
+
+        // const action = mixer.clipAction(alien.animations[0]);
+        // action.play();
+        alien.traverse(function (child) {
+            if (child.isMesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+            }
+        });
+        scene.add(alien);
+    });
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(window.devicePixelRatio);

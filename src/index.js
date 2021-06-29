@@ -16,7 +16,7 @@ let mesh, texture;
 let clock = new THREE.Clock();
 let smokeParticles = [];
 
-let fbx, aircraft, mixer;
+let house, alien, aircraft, mixer;
 
 const worldWidth = 256, worldDepth = 256,
     worldHalfWidth = worldWidth / 2, worldHalfDepth = worldDepth / 2;
@@ -104,6 +104,7 @@ function init() {
     texture.wrapT = THREE.ClampToEdgeWrapping;
 
     mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ map: texture }));
+    mesh.receiveShadow = true
     scene.add(mesh);
 
     // const geometryHelper = new THREE.ConeGeometry(20, 100, 3);
@@ -173,16 +174,6 @@ function init() {
     sunSphere.visible = true;
     sun_uniforms['sunPosition'].value.copy(sunSphere.position);
 
-    // const dirLight = new THREE.DirectionalLight(0xffffff);
-    // dirLight.position.set(sunSphere.position);
-    // dirLight.castShadow = true;
-    // dirLight.shadow.camera.top = 1000;
-    // dirLight.shadow.camera.bottom = -10000;
-    // dirLight.shadow.camera.left = -10000;
-    // dirLight.shadow.camera.right = 10000;
-    // scene.add(dirLight);
-
-
     // model
     const loader = new FBXLoader();
 
@@ -210,18 +201,35 @@ function init() {
     // })
 
     loader.load('models/fbx/Wooden_House/Wooden_House.fbx', function (object) {
-        fbx = object;
-        fbx.position.y = 400
-        fbx.scale.set(2, 2, 2)
+        house = object;
+        house.position.y = 400
+        house.scale.set(2, 2, 2)
         const texture = textureLoader.load('models/fbx/Wooden_House/House_Texture.png');
-        fbx.traverse(function (child) {
+        house.traverse(function (child) {
             if (child.isMesh) {
                 child.castShadow = true;
                 child.receiveShadow = true;
                 child.material.map = texture
             }
         });
-        scene.add(fbx);
+        scene.add(house);
+    });
+
+    loader.load('models/fbx/Alien/Alien.fbx', function (object) {
+        alien = object;
+        alien.position.set(-2000, 400, 2000)
+        alien.scale.set(5, 5, 5)
+        mixer = new THREE.AnimationMixer(alien);
+
+        const action = mixer.clipAction(alien.animations[2]);
+        action.play();
+        alien.traverse(function (child) {
+            if (child.isMesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+            }
+        });
+        scene.add(alien);
     });
 
     loader.load('models/fbx/Tree/Tree.fbx', function (object) {
@@ -357,7 +365,7 @@ function animate() {
         }
     }
 
-    // if (mixer) mixer.update(delta);
+    if (mixer) mixer.update(delta);
 
     water.material.uniforms['time'].value += 1.0 / 30.0;
 
