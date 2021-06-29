@@ -200,9 +200,29 @@ function init() {
     //     scene.add(aircraft);
     // })
 
+    let mat = new THREE.MeshPhongMaterial();
+    const wallTexture = textureLoader.load('textures/wall/rough_block_wall.jpg');
+    mat.map = wallTexture;
+
+    // normal
+    let nor = textureLoader.load('textures/wall/rough_block_wall_nor.jpg');
+    mat.normalMap = nor;
+    mat.normalScale = new THREE.Vector2(3, -3)
+
+    function createCube(position) {
+        var cubeGeometry = new THREE.BoxGeometry(6000, 3000, 8000, 16, 16);
+        var cube = new THREE.Mesh(cubeGeometry, mat);
+        cube.castShadow = true;
+        cube.position.set(position.x, position.y, position.z)
+
+        return cube
+    }
+    let cube = createCube({x: 0, y: 0, z: 0})
+    scene.add(cube)
+
     loader.load('models/fbx/Wooden_House/Wooden_House.fbx', function (object) {
         house = object;
-        house.position.y = 400
+        house.position.y = 1500
         house.scale.set(2, 2, 2)
         const texture = textureLoader.load('models/fbx/Wooden_House/House_Texture.png');
         house.traverse(function (child) {
@@ -217,7 +237,7 @@ function init() {
 
     loader.load('models/fbx/Alien/Alien.fbx', function (object) {
         alien = object;
-        alien.position.set(-2000, 400, 2000)
+        alien.position.set(-2000, 2000, 2000)
         alien.scale.set(5, 5, 5)
         mixer = new THREE.AnimationMixer(alien);
 
