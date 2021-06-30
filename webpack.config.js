@@ -15,5 +15,5 @@ module.exports = {
             filename: 'index.html',
         })
     ],
-    // devtool: 'inline-source-map',
+    devtool: 'inline-source-map',
 }

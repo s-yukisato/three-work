@@ -5,9 +5,11 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { Water } from 'three/examples/jsm/objects/Water'
 import { Sky } from 'three/examples/jsm/objects/Sky'
 
-import { ImprovedNoise } from 'three/examples/jsm/math/ImprovedNoise.js';
+import { ImprovedNoise } from 'three/examples/jsm/math/ImprovedNoise';
 
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
+import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 
 let camera, controls, scene, renderer, water;
 
@@ -146,7 +148,6 @@ function init() {
     const sky_uniforms = sky.material.uniforms;
     sky_uniforms['turbidity'].value = 1;
     sky_uniforms['rayleigh'].value = 0.5;
-    // sky_uniforms['luminance'].value = 1;
     sky_uniforms['mieCoefficient'].value = 0.005;
     sky_uniforms['mieDirectionalG'].value = 0.3;
 
@@ -200,6 +201,7 @@ function init() {
     //     scene.add(aircraft);
     // })
 
+    // 土台
     let mat = new THREE.MeshPhongMaterial();
     const wallTexture = textureLoader.load('textures/wall/rough_block_wall.jpg');
     mat.map = wallTexture;
@@ -217,7 +219,7 @@ function init() {
 
         return cube
     }
-    let cube = createCube({x: 0, y: -2000, z: 0})
+    let cube = createCube({ x: 0, y: -2000, z: 0 })
     scene.add(cube)
 
     loader.load('models/fbx/Wooden_House/Wooden_House.fbx', function (object) {
@@ -237,7 +239,7 @@ function init() {
 
     loader.load('models/fbx/Alien/Alien.fbx', function (object) {
         alien = object;
-        alien.position.set(-2000, 2000, 2000)
+        alien.position.set(-2500, 2000, 2000)
         alien.scale.set(5, 5, 5)
         mixer = new THREE.AnimationMixer(alien);
 
